@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
 import mlflow
 import dagshub
 
-dagshub.init(repo_owner='OlivierArthur', repo_name='BERT_porownanie_porownanie', mlflow=True)
+dagshub.init(repo_owner='OlivierArthur', repo_name='BERT_porownanie_treningowych', mlflow=True)
 mlflow.set_experiment("BERT_Spam_porown_zb_treng")
 
 os.system("kaggle datasets download -d nitishabharathi/email-spam-dataset --unzip -o")
@@ -42,8 +42,8 @@ for data in datasety:
   df = df.sample(n=min(2000, len(df)), random_state=42)
 
   le = LabelEncoder()
-  labels = le.fit_transform(df[config['label_col']])
-  texts = df[config['text_col']].astype(str).tolist()
+  labels = le.fit_transform(df[data['label']])
+  texts = df[data['text']].astype(str).tolist()
     
   train_texts, val_texts, train_labels, val_labels = train_test_split(texts, labels, test_size=0.2, random_state=42)
 
@@ -53,7 +53,7 @@ for data in datasety:
   train_dataset = tf.data.Dataset.from_tensor_slices((dict(train_encodings), train_labels)).shuffle(1000).batch(16)
   val_dataset = tf.data.Dataset.from_tensor_slices((dict(val_encodings), val_labels)).batch(16)
 
-  with mlflow.start_run(run_name=config['name']):
+  with mlflow.start_run(run_name=data['nazwa']):
     mlflow.tensorflow.autolog()
         
     model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
@@ -62,10 +62,10 @@ for data in datasety:
         
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
         
-    print(f"Trenowanie modelu na pliku {config['csv_name']}...")
+    print(f"Trenowanie na danych {data['csv_nazwa']}...")
     model.fit(train_dataset, validation_data=val_dataset, epochs=3)
     tf.keras.backend.clear_session()
     del model
-    print(f" Skończone {config['name']} ")
+    print(f" Skończone {data['nazwa']} ")
 
 
