@@ -15,21 +15,21 @@ os.system("kaggle datasets download -d nitishabharathi/email-spam-dataset --unzi
 
 datasety = [
     {
-        "name": "Exp_1_SpamAssassin",
-        "csv_name": "completeSpamAssassin.csv",
-        "text_col": "Body",      
-        "label_col": "Label"
+        "nazwa": "Exp_1_SpamAssassin",
+        "csv_nazwa": "completeSpamAssassin.csv",
+        "text": "Body",      
+        "label": "Label"
     },
     {
-        "name": "Exp_2_Enron",
-        "csv_name": "enronSpamSubset.csv",
-        "text_col": "Body",
-        "label_col": "Label"
+        "nazwa": "Exp_2_Enron",
+        "csv_nazwa": "enronSpamSubset.csv",
+        "text": "Body",
+        "label": "Label"
     },
     {
-        "name": "Exp_3_LingSpam",
-        "csv_name": "lingSpam.csv",
-        "text_col": "Body",
-        "label_col": "Label"
+        "nazwa": "Exp_3_LingSpam",
+        "csv_nazwa": "lingSpam.csv",
+        "text": "Body",
+        "label": "Label"
     }
 ]
