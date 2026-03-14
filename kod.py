@@ -56,15 +56,15 @@ for data in datasety:
   with mlflow.start_run(run_name=config['name']):
     mlflow.tensorflow.autolog()
         
-      model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
-      optimizer = tf.keras.optimizers.Adam(learning_rate=3e-5)
-      loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=3e-5)
+    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         
-      model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
         
-      print(f"Trenowanie modelu na pliku {config['csv_name']}...")
-      model.fit(train_dataset, validation_data=val_dataset, epochs=3)
-  tf.keras.backend.clear_session()
+    print(f"Trenowanie modelu na pliku {config['csv_name']}...")
+    model.fit(train_dataset, validation_data=val_dataset, epochs=3)
+    tf.keras.backend.clear_session()
     del model
     print(f" Skończone {config['name']} ")
 
