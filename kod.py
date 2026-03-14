@@ -37,7 +37,7 @@ datasety = [
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 for data in datasety:
-  df = pd.read_csv(data["csv_nazwa"])
+  df = pd.read_csv(data["csv_nazwa"], encoding='utf-8', errors='replace')
   df = df[[data['text'], data['label']]].dropna()
   df = df.sample(n=min(2000, len(df)), random_state=42)
 
