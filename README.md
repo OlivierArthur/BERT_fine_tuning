@@ -6,6 +6,7 @@ W danych pojawiają się "Subject: " (tylko w jednym zbiorze) i ciągi mailów, 
 W pierwszej iteracji porównania training setów w TrainingArguments nie było weight decay, były 3 epoki i learning rate 3e-5. Na wykresach można było zaobserwować overtraining w zbiorach treningowych enron i lingspam. W przypadku SpamAssassin trenowanie przez 3 epoki z większym learning rate było efektywne, co można zobaczyć na wykresach w folderach.
 
 W eksperymencie dwa zmniejszamy learning rate, robimy 2 epoki i dodajemy weight decay - wszystko żeby zapobiegać overfitting.
+We wszystkich zbiorach danych było to efektywne.
 
 
 
