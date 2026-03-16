@@ -65,7 +65,7 @@ for data in datasety:
     df = df[[data['text'], data['label']]].dropna()
 
     # Ograniczenie zbioru do max 2000 losowych próbek 
-    df = df.sample(n=min(2000, len(df)), random_state=42)
+    #df = df.sample(n=min(2000, len(df)), random_state=42)
 
     # Kodowanie etykiet tekstowych do wartości binarnych (0, 1)
     le = LabelEncoder()
