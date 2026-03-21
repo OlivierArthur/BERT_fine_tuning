@@ -12,7 +12,7 @@ import dagshub
 dagshub.init(repo_owner='OlivierArthur', repo_name='BERT_porownanie_treningowych', mlflow=True)
 mlflow.set_experiment("BERT_Spam_porown_zb_treng")
 
-# -o to nadpisane plikow
+#-o to nadpisane plikow
 os.system("kaggle datasets download -d nitishabharathi/email-spam-dataset --unzip -o")
 
 datasety = [
@@ -86,7 +86,7 @@ for data in datasety:
 )
 
     #tokenizacja
-    train_encodings = tokenizer(train_texts, truncation=True, padding=True, max_length=128) #ucinanie za duzych true, padding wiadomo 
+    train_encodings = tokenizer(train_texts, truncation=True, padding=True, max_length=128) #ucinanie za duzych true, padding wiadomo
     val_encodings = tokenizer(val_texts, truncation=True, padding=True, max_length=128)
 
     #Pytorch wymaga takiego czegoś
@@ -125,6 +125,7 @@ for data in datasety:
             report_to="mlflow",
             logging_steps=10,
             weight_decay=0.01
+            save_total_limit=1
         )
 
 
