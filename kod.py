@@ -105,8 +105,8 @@ for data in datasety:
         for param in model.bert.embeddings.parameters():
             param.requires_grad = False
 
-        #Zamrażamy pierwsze 5 warstw, zmienną można zmieniać
-        warstwy_do_zamrozenia = 5
+        #Zamrażamy pierwsze 3 warstwy, zmienną można zmieniać
+        warstwy_do_zamrozenia = 3
         for i in range(warstwy_do_zamrozenia):
             for param in model.bert.encoder.layer[i].parameters():
                 param.requires_grad = False
