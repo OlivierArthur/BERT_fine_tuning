@@ -1,0 +1,6 @@
+__pycache__/
+*.csv
+*.zip
+.ipynb_checkpoints/
+mlruns/
+wyniki_*/
