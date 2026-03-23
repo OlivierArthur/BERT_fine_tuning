@@ -17,9 +17,9 @@ mlflow.set_experiment("BERT_Cross_Testing_TREC")
 device = 0 if torch.cuda.is_available() else -1
 
 df_pom = [
-    {"nazwa": "Exp_1_SpamAssassin/checkpoint-530"},
-    {"nazwa": "Exp_2_Enron/checkpoint-970"},
-    {"nazwa": "Exp_3_LingSpam/checkpoint-260"}
+    {"nazwa": "Exp_1_SpamAssassin/checkpoint-795"},
+    {"nazwa": "Exp_2_Enron/checkpoint-1455"},
+    {"nazwa": "Exp_3_LingSpam/checkpoint-390"}
 ]
 
 os.system("kaggle datasets download -d bayes2003/emails-for-spam-or-ham-classification-trec-2007 --unzip -o")
