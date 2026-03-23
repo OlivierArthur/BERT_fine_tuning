@@ -114,7 +114,7 @@ for data in datasety:
 
         training_args = TrainingArguments(
             output_dir=f"./wyniki_{data['nazwa']}",
-            num_train_epochs=2,
+            num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
             eval_strategy="steps",
