@@ -41,10 +41,10 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def compute_metrics(p: EvalPrediction):
     probs = scipy.special.softmax(p.predictions, axis=1)
-    
-    threshold = 0.75 
+
+    threshold = 0.75
     preds = (probs[:, 1] > threshold).astype(int)
-    
+
     labels = p.label_ids
 
     acc = accuracy_score(labels, preds)
@@ -119,7 +119,7 @@ for data in datasety:
 
         training_args = TrainingArguments(
             output_dir=f"./wyniki_{data['nazwa']}",
-            num_train_epochs=3,
+            num_train_epochs=4,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
             eval_strategy="epoch",
