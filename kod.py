@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import torch
 import numpy as np
+import scipy.special
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
@@ -39,11 +40,14 @@ class SpamDataset(torch.utils.data.Dataset):
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def compute_metrics(p: EvalPrediction):
-    preds = np.argmax(p.predictions, axis=1)
+    probs = scipy.special.softmax(p.predictions, axis=1)
+    
+    threshold = 0.75 
+    preds = (probs[:, 1] > threshold).astype(int)
+    
     labels = p.label_ids
 
     acc = accuracy_score(labels, preds)
-
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='binary')
 
     return {
@@ -52,6 +56,7 @@ def compute_metrics(p: EvalPrediction):
         'precision': precision,
         'recall': recall
     }
+
 
 for data in datasety:
     print(f"\n START EKSPERYMENTU: {data['nazwa']}")
@@ -94,7 +99,7 @@ for data in datasety:
     val_dataset = SpamDataset(val_encodings, val_labels)
 
 
-    with mlflow.start_run(run_name=(data['nazwa'])+' stratified, zamrożone 5, pełne dane'):
+    with mlflow.start_run(run_name=(data['nazwa'])+' stratified, zamrożone 3, pełne dane'):
 
         #pobranie berta i dodanie warstwy do klasyfikacji z 2 labels - 2 klasy
         model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2) #Mozna usunac '#' poniżej żeby trenować tylko warstwę klasyfikacyjną, wypada do tego zwiększyć learning_rate do 2e-3
@@ -117,10 +122,8 @@ for data in datasety:
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
-            eval_strategy="steps",
-            eval_steps=50,
-            save_strategy="steps",
-            save_steps=50,
+            eval_strategy="epoch",
+            save_strategy="epoch",
             learning_rate=2e-5,
             report_to="mlflow",
             logging_steps=10,
