@@ -12,7 +12,7 @@ os.environ['KAGGLE_USERNAME'] = userdata.get('KAGGLE_USERNAME')
 os.environ['KAGGLE_KEY'] = userdata.get('KAGGLE_KEY')
 
 dagshub.init(repo_owner='OlivierArthur', repo_name='BERT_porownanie_treningowych', mlflow=True)
-mlflow.set_experiment("BERT_Cross_Testing_TREC")
+mlflow.set_experiment("BERT_Testowanie_3epoki")
 
 device = 0 if torch.cuda.is_available() else -1
 
