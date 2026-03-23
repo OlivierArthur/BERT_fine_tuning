@@ -1,6 +1,20 @@
-
 import os
+import pandas as pd
+import mlflow
+import dagshub
+import torch
 from transformers import pipeline
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from tqdm import tqdm
+from google.colab import userdata
+
+os.environ['KAGGLE_USERNAME'] = userdata.get('KAGGLE_USERNAME')
+os.environ['KAGGLE_KEY'] = userdata.get('KAGGLE_KEY')
+
+dagshub.init(repo_owner='OlivierArthur', repo_name='BERT_porownanie_treningowych', mlflow=True)
+mlflow.set_experiment("BERT_Cross_Testing_TREC")
+
+device = 0 if torch.cuda.is_available() else -1
 
 df_pom = [
     {"nazwa": "Exp_1_SpamAssassin/checkpoint-530"},
@@ -8,56 +22,44 @@ df_pom = [
     {"nazwa": "Exp_3_LingSpam/checkpoint-260"}
 ]
 
-# dać tu dwa zbiory testowe jeden z Subject:, jeden bez albo mieszane 
-#os.system("kaggle datasets download -d nitishabharathi/email-spam-dataset --unzip -o")
-#os.system("kaggle datasets download -d nitishabharathi/email-spam-dataset --unzip -o")
+os.system("kaggle datasets download -d bayes2003/emails-for-spam-or-ham-classification-trec-2007 --unzip -o")
 
-niezalezne_datasety_testowe = [
-    {"nazwa": "", "csv_nazwa": "", "text": "", "label": ""},
-    {"nazwa": "", "csv_nazwa": "", "text": "", "label": ""}
-]
+df_raw = pd.read_csv("email_text.csv", encoding='utf-8', encoding_errors='replace')
+df_cleaned = df_raw[['text', 'label']].dropna()
 
-#zmienić nazwę ścieżki (!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)
+texts = df_cleaned['text'].astype(str).tolist()
+true_labels = df_cleaned['label'].astype(int).tolist()
 
-for nazwy in df_pom:
-  klasyfikator = pipeline(
-    task="text-classification", 
-    model=f"./wyniki_{nazwy['nazwa']}", 
-    tokenizer="bert-base-uncased",
-    device=0 
-  )
+for model_info in df_pom:
+    model_path = f"./wyniki_{model_info['nazwa']}"
 
-  #odkomentowac kiedy beda zbiory
-  '''for test_data in niezalezne_datasety_testowe:
-    print(f"\n Testowanie na zbiorze: {test_data['nazwa']}")
-    df_test = pd.read_csv(test_data["csv_nazwa"], encoding='utf-8', encoding_errors='replace')
-    df_test = df_test[[test_data['text'], test_data['label']]].dropna()
-            
-      
-    y_true = le.fit_transform(df_test[test_data['label']])
-    teksty = df_test[test_data['text']].astype(str).tolist()
-            
-    wyniki_surowe = klasyfikator(teksty, batch_size=32, truncation=True, max_length=128)
-            
-            # Wyciągnięcie przewidywanych etykiet (LABEL_0 -> 0, LABEL_1 -> 1)
-    y_pred = [int(wynik['label'].replace('LABEL_', '')) for wynik in wyniki_surowe]
-            
-    acc = accuracy_score(y_true, y_pred)
-    precision, recall, f1, _ = precision_recall_fscore_support(y_true, y_pred, average='binary') 
-    print(f" Wyniki to Accuracy: {acc:.4f} | F1: {f1:.4f} | Prec: {precision:.4f} | Rec: {recall:.4f}")'''
+    print(f"\n Test dla: {model_info['nazwa']}")
 
+    with mlflow.start_run(run_name=f"Test_{model_info['nazwa']}_on_TREC"):
 
-  nowe_maile = [
-    "URGENT: Your bank account has been locked. Click the link to verify your identity.",
-    "Hey Arthur, let me know if you are available for a quick call tomorrow.",
-    "Congratulations! You have won a free trip to Hawaii. Click the link to claim your prize.",
-    "Subject: Work        Please be at work tomorrow ,. there is an important meeting",
-    "QWE QWE         eeeeeeĘĘĘĘĘĘĘĘĘĘ AAAA LLVVSDWR 96486498 ***** "
-    
-  ]
+        klasyfikator = pipeline(
+            task="text-classification",
+            model=model_path,
+            tokenizer="bert-base-uncased",
+            device=device
+        )
 
-  wyniki = klasyfikator(nowe_maile, truncation=True, max_length=128)
-  print(wyniki)
+        batch_size = 32
+        predictions_labels = []
 
+        for i in tqdm(range(0, len(texts), batch_size)):
+            batch_texts = texts[i:i + batch_size]
+            batch_results = klasyfikator(batch_texts, truncation=True, max_length=128)
+            predictions_labels.extend([1 if r['label'] == 'LABEL_1' else 0 for r in batch_results])
+
+        acc = accuracy_score(true_labels, predictions_labels)
+        precision, recall, f1, _ = precision_recall_fscore_support(true_labels, predictions_labels, average='binary')
+
+        print(f"Wyniki - Acc: {acc:.4f}, F1: {f1:.4f}, Prec: {precision:.4f}, Rec: {recall:.4f}")
+
+        mlflow.log_metrics({"accuracy": acc, "f1_score": f1, "precision": precision, "recall": recall})
+
+        del klasyfikator
+        torch.cuda.empty_cache()
 
 
