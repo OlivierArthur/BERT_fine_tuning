@@ -49,7 +49,7 @@ for model_info in df_pom:
 
         for i in tqdm(range(0, len(texts), batch_size)):
             batch_texts = texts[i:i + batch_size]
-            batch_results = klasyfikator(batch_texts, truncation=True, max_length=128)
+            batch_results = klasyfikator(batch_texts, truncation=True, max_length=512)
             predictions_labels.extend([1 if r['label'] == 'LABEL_1' else 0 for r in batch_results])
 
         acc = accuracy_score(true_labels, predictions_labels)
