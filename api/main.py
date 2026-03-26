@@ -11,22 +11,21 @@ spam_classifier = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global spam_classifier
-    print("Loading model from Hugging Face Hub...")
 
 
-    model_id = "your-username/modern-phishing-detector"
+    model_id = "OliverArt5500/klasyfikatorspamu1"
 
 
     spam_classifier = pipeline("text-classification", model=model_id, tokenizer=model_id)
-    print("Model loaded successfully. Ready for traffic!")
+    print("Model gotowy")
 
     yield
 
-    print("Shutting down API and clearing memory.")
+    print("Wyłączanie API")
     spam_classifier = None
 
 
-app = FastAPI(title="Modern Phishing Detection API", lifespan=lifespan)
+app = FastAPI(title="klasyfikator spamu", lifespan=lifespan)
 
 
 @app.post("/predict")
