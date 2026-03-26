@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline
 
-app = FastAPI(title="Klasyfikator SPAM AP  I")
+app = FastAPI(title="Klasyfikator SPAM API")
 
 NAZWA = "OliverArt5500/klasyfikatorspamu1"
 
