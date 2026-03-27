@@ -1,44 +1,48 @@
+import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from transformers import pipeline
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class EmailRequest(BaseModel):
     text: str
 
-spam_classifier = None
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global spam_classifier
-
-
     model_id = "OliverArt5500/klasyfikatorspamu1"
-
-
-    spam_classifier = pipeline("text-classification", model=model_id, tokenizer=model_id)
-    print("Model gotowy")
+    
+    logger.info("Ładowanie modelu AI...")
+    app.state.spam_classifier = pipeline("text-classification", model=model_id, tokenizer=model_id)
+    logger.info("Model gotowy")
 
     yield
 
-    print("Wyłączanie API")
-    spam_classifier = None
+    logger.info("Wyłączanie API. Czyszczenie pamięci.")
+    app.state.spam_classifier = None
 
-
-app = FastAPI(title="klasyfikator spamu", lifespan=lifespan)
-
+app = FastAPI(title="Klasyfikator spamu", lifespan=lifespan)
 
 @app.post("/predict")
-async def predict_spam(request: EmailRequest):
-    if not request.text.strip():
-        raise HTTPException(status_code=400, detail="Email text cannot be empty.")
+async def predict_spam(request: Request, payload: EmailRequest):
+    if not payload.text.strip():
+        raise HTTPException(status_code=400, detail="wiadomość nie może być pusta.")
 
     try:
-        prediction = spam_classifier(request.text, truncation=True, max_length=512)[0]
+        # Pobieramy nasz model ze stanu aplikacji
+        classifier = request.app.state.spam_classifier
+        
+        # Wykonujemy predykcję
+        prediction = classifier(payload.text, truncation=True, max_length=512)[0]
 
         return {
             "label": prediction["label"],
             "confidence_score": prediction["score"]
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        #Będzie w dockerlogs
+        logger.error(f"Krytyczny błąd podczas analizy tekstu: {str(e)}")
+        
+        raise HTTPException(status_code=500, detail="Wystąpił błąd")
