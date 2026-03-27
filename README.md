@@ -4,6 +4,9 @@ W projekcie wykorzystano środowisko google colab z "!pip install evaluate".
 
 Jak korzystać:
 
+1. Sklonować to repozytorium
+2. 
+
 
 
 
