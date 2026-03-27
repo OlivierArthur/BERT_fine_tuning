@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    logger.info("Wyłączanie API. Czyszczenie pamięci.")
+    logger.info("wyłączanie API")
     app.state.spam_classifier = None
 
 app = FastAPI(title="Klasyfikator spamu", lifespan=lifespan)
