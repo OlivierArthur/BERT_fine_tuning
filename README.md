@@ -1,5 +1,7 @@
-Fine-tunowanie bert-base-uncased for sequence classification na zbiorze enron spam pod klasyfikację mailów jako spam/ham.
-Spam - 1, Ham - 0.
+Konkretne parametry użyte podczas treningu można zobaczyć na https://huggingface.co/OliverArt5500/klasyfikatorspamu1 
+
+W projekcie wykorzystano środowisko google colab z "!pip install evaluate".
+Do wykorzystania modelu potrzebny jest docker, otwiera się port 8000.
 
 
 
