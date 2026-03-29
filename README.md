@@ -1,7 +1,7 @@
 Konkretne parametry użyte podczas treningu modelu można zobaczyć tutaj: 
 https://huggingface.co/OliverArt5500/klasyfikatorspamu1
 
-Model został wytrenowany z wykorzystaniem środowiska Google Colab (z użyciem `evaluate`, wymagane !pip install evaluate).
+Model został wytrenowany z wykorzystaniem środowiska Google Colab (z użyciem evaluate, wymagane !pip install evaluate).
 
 Gotowy obraz środowiska znajduje się na Docker Hub: 
 https://hub.docker.com/repository/docker/oliverart5500/klasyfikatorspamu/general
